@@ -59,7 +59,7 @@ void setup() {
 
   Serial.println(F("This code scan the MIFARE Classsic NUID."));
 
-  CheckWIFI();
+  CheckWIFI();  
 
   //Provide the autntication data
   Firebase.begin(DATABASE_URL, DATABASE_SECRET, SECRET_SSID, SECRET_PASS);
@@ -79,11 +79,12 @@ void setup() {
 
   Serial.println("You're connected to the MQTT broker!");
   Serial.println();
-
+  
   if (WDT->CTRL.reg & WDT_CTRL_ENABLE) {
     WDT->CTRL.reg &= ~WDT_CTRL_ENABLE;
     Serial.println("Watchdog Timer is disabled.");
   }
+
 }
 
 void loop() {
@@ -132,9 +133,9 @@ void loop() {
     Serial.println(F("Card already read"));
     tone(buzzer, 1200, 50);
     delay(60);
-    tone(buzzer, 900, 60);
+    tone(buzzer, 900,  60);
     delay(70);
-    noTone(buzzer);
+    noTone(buzzer); 
   }
   // Halt PICC
   rfid.PICC_HaltA();
@@ -216,7 +217,7 @@ void VerifiedMsg() {
 
 void GateOpen() {
   Serial.println(IDStatus);
-  if (IDStatus == "Device verified!" && pos == 0) {
+  if (IDStatus == "Device verified!") {
     for (pos = 0; pos <= 90; pos += 1) {  // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
       myservo.write(pos);  // tell servo to go to position in variable 'pos'
@@ -230,23 +231,13 @@ void GateOpen() {
     if (Firebase.getString(fbdo, getPath) && fbdo.stringData() == "Opened") {
       Firebase.setString(fbdo, getPath, "Closed");
     }
-
-  } else if (IDStatus == "Device verified!" && pos != 0) {
-    delay(3000);
-    for (pos = 90; pos >= 0; pos -= 1) {
-      myservo.write(pos);
-      delay(15);
-    }
-    if (Firebase.getString(fbdo, getPath) && fbdo.stringData() == "Opened") {
-      Firebase.setString(fbdo, getPath, "Closed");
-    }
   }
 
   IDStatus = "";
 }
 
 void CheckRapberryPi() {
-  digitalWrite(LED, HIGH);
+digitalWrite(LED, HIGH);
 
   if (Firebase.getString(fbdo, getPath)) {
     Serial.println("Gate" + fbdo.stringData());
@@ -277,9 +268,9 @@ void GateOpenNow() {
 void GateCloseNow() {
   Serial.println(IDStatus);
 
-  for (pos = 90; pos >= 0; pos -= 1) {
-    myservo.write(pos);
-    delay(15);
+  for (pos = 90; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
+    myservo.write(pos);                 // tell servo to go to position in variable 'pos'
+    delay(15);                          // waits 15 ms for the servo to reach the position
   }
 
   IDStatus = "";
@@ -291,8 +282,8 @@ void CheckWIFI() {
   Serial.println(ssid);
 
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-    // failed, retry
-    Serial.print(".");
+  // failed, retry
+  Serial.print(".");
     digitalWrite(LED, HIGH);
     delay(700);
     digitalWrite(LED, LOW);
@@ -300,9 +291,10 @@ void CheckWIFI() {
     digitalWrite(LED, HIGH);
     delay(700);
     digitalWrite(LED, LOW);
-    delay(2900);
+    delay(2900);  
   }
-
+  
   Serial.println("You're connected to the network");
   Serial.println();
 }
+
